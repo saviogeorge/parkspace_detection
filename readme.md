@@ -4,7 +4,7 @@ Parkspace detection using YOLOv5 (An object detection model built on PyTorch)
 on OpenCV DNN module (a single API for performing Deep Learning inference and has very few dependencies)
 
 ## Result
-[![](/media/savio/5CA2CA60A2CA3E70/Career/2022/Tech_preparation/projects/object_detection/output/parkspace_detection.mp4)]
+![Video](https://github.com/saviogeorge/parkspace_detection/assets/20711873/bd9a98a7-9a7f-468a-8d0d-4676830d1839)
 
 ## References
 
