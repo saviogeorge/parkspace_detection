@@ -1,15 +1,18 @@
 // Include Libraries.
 #include <opencv2/dnn.hpp>
-#include "../headers/yolov5model.hpp"
-
+#include <opencv2/highgui/highgui.hpp>
 #include <fstream>
+
+#include "../headers/yolo_OBD.hpp"
 
 // Namespaces.
 using namespace cv;
 using namespace std;
 using namespace cv::dnn;
 
-Image img_obj;
+
+extern Image img_obj;
+
 
 namespace camera_params
 {
@@ -31,47 +34,44 @@ bool parking_space_check(cv::VideoCapture& cap)
 {
     Mat frame;
     bool is_success = cap.read(frame);
-    Yolov5Model yolo_obj;
+    YoloOBD obj_det;
 
-    //frame = imread("/media/savio/5CA2CA60A2CA3E70/Career/2022/Tech_preparation/projects/object_detection/sample.jpg");
-    // if (is_success)
-    // {
-    //     imshow("Frame", frame);
-    // }
-    //        // If frames are not there, close it
-    // if (is_success == false)
-    // {
-    //     cout << "Video camera is disconnected" << endl;
-    //     break;
-    // }        
-    //wait 20 ms between successive frames and break the loop if key q is pressed
-    // int key = waitKey(20);
-    // if (key == 'q')
-    // {
-    //     cout << "q key is pressed by the user. Stopping the video" << endl;
-    //     break;
-    // }
+    if (is_success)
+    {
+        // Load model.
+        Net net;
+        net = readNet("/media/savio/5CA2CA60A2CA3E70/Career/2022/Tech_preparation/projects/parkspace_detection/models/yolov5m.onnx"); 
 
-    // Load model.
-    Net net;
-    net = readNet("../models/yolov5m.onnx"); 
-
-    // Preprocess the image and get obtain the objects detected.
-    vector<Mat> detections;
-    detections = yolo_obj.pre_process(frame, net);
+        // Preprocess the image and get obtain the objects detected.
+        vector<Mat> detections;
+        detections = obj_det.pre_process(frame, net);
 
 
-    img_obj = yolo_obj.post_process(frame, detections);
-    
-    // The idea is the bounding boxes of the cars parked next to each other will always 
-    // overlap if it does not overlap then we assume there is a potential space for parking
-    // in between.
-    // Note: Not an optimal approach but works with the current set up.
-    // TODO: Alternatively the IoU can be employed with a threshold value
+        obj_det.post_process(frame, detections);
+        
+        // The idea is the bounding boxes of the cars parked next to each other will always 
+        // overlap if it does not overlap then we assume there is a potential space for parking
+        // in between.
+        // Note: Not an optimal approach but works with the current set up.
+        // TODO: Alternatively the IoU can be employed with a threshold value
 
-    bool parkspace_detected = !(std::all_of(img_obj.box_intersect_list.begin(),img_obj.box_intersect_list.end(),[](bool v){return v;}));
+        bool parkspace_detected = !(std::all_of(img_obj.box_intersect_list.begin(),img_obj.box_intersect_list.end(),[](bool v){return v;}));
 
-    return parkspace_detected;
+        return parkspace_detected;
+    }
+    // If frames are not there, close it
+    if (is_success == false)
+    {
+        cout << "Video camera is disconnected" << endl;
+    }        
+    // wait 20 ms between successive frames and break the loop if key q is pressed
+    int key = waitKey(20);
+    if (key == 'q')
+    {
+        cout << "q key is pressed by the user. Stopping the video" << endl;
+    }
+
+
 }
 
 
@@ -79,7 +79,7 @@ int main()
 {
 
     cv::VideoCapture cap;
-    cap.open("test_video.mp4");
+    cap.open("/media/savio/5CA2CA60A2CA3E70/Career/2022/Tech_preparation/projects/parkspace_detection/test_video.mp4");
     int index = 0;
     while(cap.isOpened())
     {
@@ -100,15 +100,6 @@ int main()
         }
         index = 0;
 
-
-
-        // vector<double> layersTimes;
-        // double freq = getTickFrequency() / 1000;
-        // double t = net.getPerfProfile(layersTimes) / freq;
-        // std::cout<<"before put text"<<std::endl;
-        // string label = format("Inference time : %.2f ms", t);
-        // putText(img_obj.img, label, Point(20, 40), text_params::FONT_FACE, text_params::FONT_SCALE, opencv_params::RED);
-        // imwrite(filename, img);
         imshow("Output", img_obj.img);
         waitKey(1);
             
