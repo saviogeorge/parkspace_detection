@@ -12,7 +12,14 @@ https://github.com/saviogeorge/parkspace_detection/assets/20711873/f53f23eb-4215
 
 1. ROI based processing, also handle the case when no vehicles are detected parked.
 2. Consider IoU with a threshold instead of checking for bounding box intersection.
-3. Calculate if a car fit in when a space is detected. 
+3. Calculate if a car fit in when a space is detected.
+
+## Build environment
+
+Ubuntu 18.04 OS.  
+OpenCV 3.2.0.  
+Clang compiler, C++ 14 standard.  
+The vscode settings can be found in .vscode folder
 
 ## References
 

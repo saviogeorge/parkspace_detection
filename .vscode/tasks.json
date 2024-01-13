@@ -8,8 +8,6 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${fileDirname}/*.cpp",
-                // "${fileDirname}/*.cpp",
-                //"${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "-I", "/usr/local/include/opencv4/",
